@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Queen's | Carta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        html { background-color: #0A0A0A; }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            color: #EDEDED;
+            background-color: transparent;
+            letter-spacing: 0.05em;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            margin: 0 auto;
+            max-width: 28rem;
+            background-image: url('fotos-menu/pizzas-clasicas.webp');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.08;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .font-title { font-family: 'Quicksand', sans-serif; letter-spacing: 0.15em; }
+
+        .text-neon-red {
+            color: #FFFFFF;
+            text-shadow: 0 0 8px #CC0000, 0 0 16px #CC0000;
+        }
+
+        .border-neon-red {
+            border-color: #CC0000;
+            box-shadow: 0 0 10px rgba(204,0,0,0.45), inset 0 0 5px rgba(204,0,0,0.15);
+        }
+
+        .bg-card { background-color: #1A1A1A; }
+
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .no-scroll::-webkit-scrollbar { display: none; }
+
+        /* Crown badge */
+        .crown-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 22px;
+            filter: drop-shadow(0 0 6px #FFD700);
+        }
+
+        /* Size pills */
+        .size-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border: 1px solid #555;
+            border-radius: 20px;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            color: #aaa;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .size-pill span {
+            color: #CC0000;
+            font-weight: 700;
+            text-shadow: 0 0 6px #CC0000;
+        }
+    </style>
+</head>
+
+<body class="text-gray-200">
+
+    <header class="max-w-md mx-auto bg-[#050505] text-white h-20 sticky top-0 z-50 flex justify-center items-center shadow-[0_5px_20px_rgba(0,0,0,0.9)] border-b border-[#222] relative">
+        <div id="header-title" class="absolute left-1/2 -translate-x-1/2 flex flex-col justify-center items-center leading-none">
+            <span class="text-[9px] uppercase tracking-[0.5em] text-[#CC0000] font-title font-bold" style="text-shadow:0 0 8px #CC0000">— Bienvenidos a —</span>
+            <span class="text-2xl font-title font-bold text-white tracking-[0.2em] uppercase" style="text-shadow:0 0 12px #CC0000, 0 0 24px #CC0000">Pizza Queen's</span>
+        </div>
+        <button id="btn-atras" onclick="history.back()"
+            class="hidden absolute left-4 text-xs bg-black px-3 py-2 rounded border border-[#CC0000] text-[#CC0000] font-title font-bold z-10 uppercase tracking-widest active:scale-95 transition-transform">
+            ← Volver
+        </button>
+    </header>
+
+    <main class="max-w-md mx-auto p-4">
+
+        <div id="vista-categorias" class="fade-in space-y-5 pb-20">
+            <h2 class="text-center text-2xl font-title my-6 text-white tracking-widest uppercase">
+                👑 Nuestra Carta
+            </h2>
+            <div id="contenedor-categorias-principal" class="space-y-5"></div>
+        </div>
+
+        <div id="vista-platos" class="hidden fade-in">
+            <h3 id="titulo-actual"
+                class="text-xl font-title mb-6 flex items-center uppercase tracking-[0.2em] text-neon-red leading-tight">
+                <span class="w-10 h-[2px] bg-[#CC0000] shadow-[0_0_8px_#CC0000] mr-3 flex-shrink-0"></span>
+                CATEGORÍA
+            </h3>
+            <div id="grid-platos" class="grid grid-cols-2 gap-4 pb-10"></div>
+        </div>
+    </main>
+
+    <!-- Detail modal -->
+    <div id="dish-detail"
+        class="fixed inset-0 max-w-md mx-auto z-[60] transform translate-y-full transition-transform duration-500 ease-in-out overflow-y-auto"
+        style="background-color: #050505;">
+
+        <button onclick="closeDetail()"
+            class="absolute top-6 right-6 bg-[#1A1A1A] text-white w-12 h-12 rounded shadow-2xl z-10 font-bold border border-[#CC0000] flex items-center justify-center text-xl active:scale-90 transition-transform">✕</button>
+
+        <div class="flex flex-col items-center justify-center min-h-screen p-6">
+
+            <div class="relative mb-10 mt-10">
+                <div class="w-60 h-60 rounded-full border-2 border-[#CC0000] overflow-hidden bg-[#1A1A1A]"
+                    style="box-shadow: 0 0 30px rgba(204,0,0,0.3)">
+                    <img id="detail-img" src="" class="w-full h-full object-cover opacity-90">
+                </div>
+                <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-[#0A0A0A] px-5 py-2 rounded border border-[#CC0000] shadow-lg min-w-[120px] text-center"
+                    style="box-shadow: 0 0 12px rgba(204,0,0,0.4)">
+                    <span id="detail-price" class="text-[#FF3333] font-title font-bold text-base tracking-wide whitespace-nowrap"
+                        style="text-shadow: 0 0 8px #CC0000;"></span>
+                </div>
+            </div>
+
+            <div class="w-full bg-[#111] rounded p-8 shadow-2xl border-t-4 border-[#CC0000] relative"
+                style="box-shadow: 0 -4px 20px rgba(204,0,0,0.1)">
+
+                <h2 id="detail-title"
+                    class="text-2xl font-title text-white text-center mb-6 uppercase tracking-[0.15em] leading-tight"
+                    style="text-shadow: 0 0 10px #CC0000;"></h2>
+
+                <div class="space-y-8">
+                    <div class="text-center">
+                        <h4 class="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-bold mb-3">Ingredientes</h4>
+                        <p id="detail-ingredients" class="text-gray-300 text-sm leading-relaxed font-light px-2"></p>
+                    </div>
+
+                    <div id="detail-sizes-wrap" class="hidden text-center">
+                        <h4 class="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-bold mb-3">Tamaños</h4>
+                        <div id="detail-sizes" class="flex justify-center gap-2 flex-wrap"></div>
+                    </div>
+
+                    <div class="text-center pt-4 border-t border-[#222]">
+                        <h4 class="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-bold mb-4">Alérgenos</h4>
+                        <div id="detail-alergenos" class="flex justify-center gap-3 mt-2 flex-wrap"></div>
+                    </div>
+                </div>
+
+                <button onclick="closeDetail()"
+                    class="mt-10 w-full bg-[#0A0A0A] text-white py-4 rounded font-title font-bold shadow-lg border border-[#CC0000] active:scale-95 transition-transform uppercase tracking-widest text-xs hover:bg-[#CC0000] hover:shadow-[0_0_20px_rgba(204,0,0,0.6)]">
+                    Regresar
+                </button>
+            </div>
+
+            <p class="mt-8 text-gray-700 text-[10px] uppercase tracking-[0.5em] font-title">Pizza Queen's</p>
+        </div>
+    </div>
+
+    <script>
+        const categorias = [
+            { id: 'PIZZAS CLÁSICAS',   foto: 'fotos-menu/pizzas-clasicas.webp' },
+            { id: 'PIZZAS BLANCAS',    foto: 'fotos-menu/pizzas-blancas.webp'  },
+            { id: 'PIZZAS DEL CAMPO',  foto: 'fotos-menu/pizzas-campo.webp'    },
+            { id: 'HAMBURGUESAS',      foto: 'fotos-menu/hamburguesas.webp'    },
+            { id: 'ENSALADAS',         foto: 'fotos-menu/ensaladas.webp'       },
+            { id: 'PARA ACOMPAÑAR',    foto: 'fotos-menu/acompanamiento.webp'  },
+            { id: 'PATATAS GRATINADAS',foto: 'fotos-menu/patatas.webp'         },
+            { id: 'MENÚS',             foto: 'fotos-menu/menus.webp'           },
+        ];
+
+        // tallas: array [{label, precio}] — shown in detail if present
+        const platos = [
+
+            // ── PIZZAS CLÁSICAS ──────────────────────────────────────────
+            { id:1,  categoria:'PIZZAS CLÁSICAS', nombre:'MARGARITA',
+              precio:'M: 9,00€', foto:'pizzas/margarita.webp',
+              ingredientes:'Base de tomate, mozzarella fresca y orégano.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,00€'},{l:'Grande',p:'11,50€'}],
+              alergenos:['🌾','🥛'] },
+
+            { id:2,  categoria:'PIZZAS CLÁSICAS', nombre:'JAMÓN',
+              precio:'M: 7,50€', foto:'pizzas/jamon.webp',
+              ingredientes:'Base de tomate, mozzarella y jamón york.',
+              tallas:[{l:'Pequeña',p:'5,50€'},{l:'Mediana',p:'7,50€'},{l:'Grande',p:'12,50€'}],
+              alergenos:['🌾','🥛'] },
+
+            { id:3,  categoria:'PIZZAS CLÁSICAS', nombre:"QUEEN'S",
+              precio:'M: 8,50€', foto:'pizzas/generic.webp',
+              ingredientes:'Nuestra pizza especial de la casa. Pregunta al equipo por los ingredientes de hoy.',
+              tallas:[{l:'Pequeña',p:'6,50€'},{l:'Mediana',p:'8,50€'},{l:'Grande',p:'13,00€'}],
+              alergenos:['🌾','🥛'] },
+
+            { id:4,  categoria:'PIZZAS CLÁSICAS', nombre:'4 ESTACIONES',
+              precio:'M: 8,00€', foto:'pizzas/4estaciones.webp',
+              ingredientes:'Base de tomate, mozzarella, jamón, champiñones, atún y pimiento morrón.',
+              tallas:[{l:'Pequeña',p:'6,00€'},{l:'Mediana',p:'8,00€'},{l:'Grande',p:'13,00€'}],
+              alergenos:['🌾','🥛','🐟'] },
+
+            { id:5,  categoria:'PIZZAS CLÁSICAS', nombre:'PEPPERONI',
+              precio:'M: 8,50€', foto:'pizzas/pepperoni.webp',
+              ingredientes:'Base de tomate, mozzarella y pepperoni artesanal.',
+              tallas:[{l:'Pequeña',p:'6,00€'},{l:'Mediana',p:'8,50€'},{l:'Grande',p:'13,50€'}],
+              alergenos:['🌾','🥛'] },
+
+            { id:6,  categoria:'PIZZAS CLÁSICAS', nombre:'TERNERA',
+              precio:'M: 8,50€', foto:'pizzas/generic.webp',
+              ingredientes:'Base de tomate, mozzarella y carne de ternera sazonada.',
+              tallas:[{l:'Pequeña',p:'6,00€'},{l:'Mediana',p:'8,50€'},{l:'Grande',p:'13,50€'}],
+              alergenos:['🌾','🥛'] },
+
+            { id:7,  categoria:'PIZZAS CLÁSICAS', nombre:'BACON',
+              precio:'M: 7,50€', foto:'pizzas/jamon.webp',
+              ingredientes:'Base de tomate, mozzarella y bacon crujiente.',
+              tallas:[{l:'Pequeña',p:'5,50€'},{l:'Mediana',p:'7,50€'},{l:'Grande',p:'12,50€'}],
+              alergenos:['🌾','🥛'] },
+
+            { id:8,  categoria:'PIZZAS CLÁSICAS', nombre:'ATÚN',
+              precio:'M: 7,50€', foto:'pizzas/4estaciones.webp',
+              ingredientes:'Base de tomate, mozzarella, atún y cebolla.',
+              tallas:[{l:'Pequeña',p:'5,50€'},{l:'Mediana',p:'7,50€'},{l:'Grande',p:'12,50€'}],
+              alergenos:['🌾','🥛','🐟'] },
+
+            { id:9,  categoria:'PIZZAS CLÁSICAS', nombre:'HAWAIANA',
+              precio:'M: 8,50€', foto:'pizzas/hawaiana.webp',
+              ingredientes:'Base de tomate, mozzarella, jamón york y piña tropical.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'8,50€'},{l:'Grande',p:'13,50€'}],
+              alergenos:['🌾','🥛'] },
+
+            // ── PIZZAS BLANCAS ───────────────────────────────────────────
+            { id:10, categoria:'PIZZAS BLANCAS', nombre:'VEGANA',
+              precio:'M: 9,50€', foto:'pizzas/vegana.webp',
+              ingredientes:'Base blanca sin lácteos, verduras de temporada, aceite de oliva y especias.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾'] },
+
+            { id:11, categoria:'PIZZAS BLANCAS', nombre:'HUMANA',
+              precio:'M: 9,50€', foto:'pizzas/blanca.webp',
+              ingredientes:'Base de nata, mozzarella di bufala y toppings selectos de temporada.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾','🥛'] },
+
+            { id:12, categoria:'PIZZAS BLANCAS', nombre:'CARBONARA',
+              precio:'M: 9,50€', foto:'pizzas/carbonara.webp',
+              ingredientes:'Base de nata, bacon, huevo y queso parmesano rallado.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾','🥛','🥚'] },
+
+            { id:13, categoria:'PIZZAS BLANCAS', nombre:'SERRANA',
+              precio:'M: 9,50€', foto:'pizzas/serrana.webp',
+              ingredientes:'Base blanca, jamón serrano ibérico, rúcula y parmesano.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾','🥛'] },
+
+            { id:14, categoria:'PIZZAS BLANCAS', nombre:'PHILADELPHIA',
+              precio:'M: 9,50€', foto:'pizzas/philadelphia.webp',
+              ingredientes:'Base de Philadelphia, salmón ahumado, alcaparras y eneldo fresco.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾','🥛','🐟'] },
+
+            { id:15, categoria:'PIZZAS BLANCAS', nombre:'MARGARITA GOURMET',
+              precio:'M: 9,50€', foto:'pizzas/margarita.webp',
+              ingredientes:'Base de tomate San Marzano, mozzarella di bufala DOP y albahaca fresca.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾','🥛'] },
+
+            { id:16, categoria:'PIZZAS BLANCAS', nombre:'BLANCO Y VERDE',
+              precio:'M: 9,50€', foto:'pizzas/vegana.webp',
+              ingredientes:'Base de pesto, mozzarella, espinacas frescas y rúcula.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾','🥛','🥜'] },
+
+            { id:17, categoria:'PIZZAS BLANCAS', nombre:'DELGADO',
+              precio:'M: 9,50€', foto:'pizzas/blanca.webp',
+              ingredientes:'Masa fina crujiente, base blanca y selección de ingredientes premium.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾','🥛'] },
+
+            { id:18, categoria:'PIZZAS BLANCAS', nombre:'DEL NORTE',
+              precio:'M: 9,50€', foto:'pizzas/serrana.webp',
+              ingredientes:'Base blanca, queso de cabra, nueces tostadas y reducción de miel.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾','🥛','🌰'] },
+
+            { id:19, categoria:'PIZZAS BLANCAS', nombre:'PASTA',
+              precio:'M: 9,50€', foto:'pizzas/carbonara.webp',
+              ingredientes:'Base de nata, pasta al dente, queso y hierbas italianas.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾','🥛','🥚'] },
+
+            // ── PIZZAS DEL CAMPO ─────────────────────────────────────────
+            { id:20, categoria:'PIZZAS DEL CAMPO', nombre:'CAMPERA',
+              precio:'M: 9,50€', foto:'pizzas/campera.webp',
+              ingredientes:'Base de tomate, mozzarella, patata laminada, romero y aceite de oliva.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾','🥛'] },
+
+            { id:21, categoria:'PIZZAS DEL CAMPO', nombre:'POPLINA',
+              precio:'M: 9,50€', foto:'pizzas/generic.webp',
+              ingredientes:'Pizza rústica con ingredientes de temporada de la región.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾','🥛'] },
+
+            { id:22, categoria:'PIZZAS DEL CAMPO', nombre:'SERRANA',
+              precio:'M: 9,50€', foto:'pizzas/serrana.webp',
+              ingredientes:'Base rústica, jamón serrano, queso manchego y pimientos asados.',
+              tallas:[{l:'Pequeña',p:'7,00€'},{l:'Mediana',p:'9,50€'},{l:'Grande',p:'14,45€'}],
+              alergenos:['🌾','🥛'] },
+
+            // ── HAMBURGUESAS ─────────────────────────────────────────────
+            { id:30, categoria:'HAMBURGUESAS', nombre:'COMPLETA',
+              precio:'4,50€', foto:'hamburguesas/clasica.webp',
+              ingredientes:'Carne de ternera 100%, lechuga, tomate, cebolla, pepinillos y salsas.',
+              alergenos:['🌾','🥚','🐟'] },
+
+            { id:31, categoria:'HAMBURGUESAS', nombre:'SIMPLE',
+              precio:'3,50€', foto:'hamburguesas/clasica.webp',
+              ingredientes:'Carne de ternera, lechuga y tomate fresco.',
+              alergenos:['🌾'] },
+
+            { id:32, categoria:'HAMBURGUESAS', nombre:'DE BACON',
+              precio:'4,00€', foto:'hamburguesas/clasica.webp',
+              ingredientes:'Carne de ternera, bacon crujiente, queso fundido y salsas.',
+              alergenos:['🌾','🥛','🥚'] },
+
+            { id:33, categoria:'HAMBURGUESAS', nombre:'DOBLE',
+              precio:'6,00€', foto:'hamburguesas/clasica.webp',
+              ingredientes:'Doble carne de ternera, doble queso y todos los complementos.',
+              alergenos:['🌾','🥛','🥚'] },
+
+            { id:34, categoria:'HAMBURGUESAS', nombre:'GOURMET',
+              precio:'5,50€', foto:'hamburguesas/gourmet.webp',
+              ingredientes:'Carne premium, queso especial, cebolla caramelizada y salsa de la casa.',
+              alergenos:['🌾','🥛','🥚'] },
+
+            { id:35, categoria:'HAMBURGUESAS', nombre:'DE RUY',
+              precio:'7,00€', foto:'hamburguesas/gourmet.webp',
+              ingredientes:'La hamburguesa estrella de la casa. Ingredientes selectos y receta propia.',
+              alergenos:['🌾','🥛','🥚'] },
+
+            { id:36, categoria:'HAMBURGUESAS', nombre:'POLLO Y PHILADELPHIA',
+              precio:'5,50€', foto:'hamburguesas/pollo.webp',
+              ingredientes:'Pechuga de pollo a la plancha, crema Philadelphia, lechuga y tomate.',
+              alergenos:['🌾','🥛'] },
+
+            { id:37, categoria:'HAMBURGUESAS', nombre:'POLLO CRISPY',
+              precio:'5,50€', foto:'hamburguesas/pollo.webp',
+              ingredientes:'Pollo crujiente empanado, lechuga, tomate y mayonesa casera.',
+              alergenos:['🌾','🥚'] },
+
+            { id:38, categoria:'HAMBURGUESAS', nombre:'HOT DOG',
+              precio:'3,50€', foto:'hamburguesas/hotdog.webp',
+              ingredientes:'Salchicha frankfurter, pan brioche, ketchup y mostaza.',
+              alergenos:['🌾'] },
+
+            { id:39, categoria:'HAMBURGUESAS', nombre:'HOT DOG COMPLETO',
+              precio:'4,50€', foto:'hamburguesas/hotdog.webp',
+              ingredientes:'Salchicha frankfurter, pan brioche, ketchup, mostaza, cebolla frita y queso.',
+              alergenos:['🌾','🥛'] },
+
+            // ── ENSALADAS ────────────────────────────────────────────────
+            { id:40, categoria:'ENSALADAS', nombre:'MIXTA',
+              precio:'6,00€', foto:'ensaladas/mixta.webp',
+              ingredientes:'Lechuga, tomate, zanahoria, maíz, cebolla y pimiento.',
+              alergenos:[] },
+
+            { id:41, categoria:'ENSALADAS', nombre:'CESAR',
+              precio:'7,00€', foto:'ensaladas/cesar.webp',
+              ingredientes:'Lechuga romana, picatostes, parmesano, pollo a la plancha y salsa César.',
+              alergenos:['🌾','🥛','🥚','🐟'] },
+
+            { id:42, categoria:'ENSALADAS', nombre:'TROPICAL',
+              precio:'7,50€', foto:'ensaladas/tropical.webp',
+              ingredientes:'Lechuga, pollo, piña tropical, zanahoria, maíz y salsa dulce.',
+              alergenos:[] },
+
+            { id:43, categoria:'ENSALADAS', nombre:'FARFALLE O ESPIRALES',
+              precio:'7,00€', foto:'ensaladas/pasta.webp',
+              ingredientes:'Pasta farfalle o espirales con verduras frescas de temporada y aliño.',
+              alergenos:['🌾','🥚'] },
+
+            { id:44, categoria:'ENSALADAS', nombre:'DE QUESOS',
+              precio:'9,50€', foto:'ensaladas/cesar.webp',
+              ingredientes:'Mezcla de quesos selectos sobre lecho de lechuga, nueces y reducción de miel.',
+              alergenos:['🥛','🌰'] },
+
+            { id:45, categoria:'ENSALADAS', nombre:'DE LA CASA',
+              precio:'9,00€', foto:'ensaladas/tropical.webp',
+              ingredientes:'Lechuga, tomate, pechuga, queso, bacon, pimiento, cebolla, zanahoria, piña y salsa de la casa.',
+              alergenos:['🥛'] },
+
+            // ── PARA ACOMPAÑAR ───────────────────────────────────────────
+            { id:50, categoria:'PARA ACOMPAÑAR', nombre:'AROS DE CEBOLLA (6u)',
+              precio:'2,00€', foto:'acompanamiento/aros.webp',
+              ingredientes:'Aros de cebolla rebozados, crujientes por fuera y suaves por dentro.',
+              alergenos:['🌾','🥚'] },
+
+            { id:51, categoria:'PARA ACOMPAÑAR', nombre:'AROS DE CEBOLLA (10u)',
+              precio:'3,50€', foto:'acompanamiento/aros.webp',
+              ingredientes:'Aros de cebolla rebozados, crujientes por fuera y suaves por dentro.',
+              alergenos:['🌾','🥚'] },
+
+            { id:52, categoria:'PARA ACOMPAÑAR', nombre:'CROQUETAS (6u)',
+              precio:'4,00€', foto:'acompanamiento/croquetas.webp',
+              ingredientes:'Croquetas caseras de jamón con bechamel cremosa y rebozado crujiente.',
+              alergenos:['🌾','🥛','🥚'] },
+
+            { id:53, categoria:'PARA ACOMPAÑAR', nombre:'CROQUETAS (10u)',
+              precio:'7,00€', foto:'acompanamiento/croquetas.webp',
+              ingredientes:'Croquetas caseras de jamón con bechamel cremosa y rebozado crujiente.',
+              alergenos:['🌾','🥛','🥚'] },
+
+            { id:54, categoria:'PARA ACOMPAÑAR', nombre:'ALITAS DE POLLO (8u)',
+              precio:'3,50€', foto:'acompanamiento/alitas.webp',
+              ingredientes:'Alitas de pollo marinadas y asadas. Servidas con salsa a elegir.',
+              alergenos:['🥚'] },
+
+            { id:55, categoria:'PARA ACOMPAÑAR', nombre:'NUGGETS POLLO (5u)',
+              precio:'3,00€', foto:'acompanamiento/nuggets.webp',
+              ingredientes:'Nuggets de pollo 100%, rebozado crujiente. Con salsa de tu elección.',
+              alergenos:['🌾','🥚'] },
+
+            { id:56, categoria:'PARA ACOMPAÑAR', nombre:'NUGGETS POLLO (10u)',
+              precio:'5,50€', foto:'acompanamiento/nuggets.webp',
+              ingredientes:'Nuggets de pollo 100%, rebozado crujiente. Con salsa de tu elección.',
+              alergenos:['🌾','🥚'] },
+
+            { id:57, categoria:'PARA ACOMPAÑAR', nombre:'PAN DE AJO',
+              precio:'3,50€', foto:'acompanamiento/pan-ajo.webp',
+              ingredientes:'Pan de masa crujiente con mantequilla de ajo y perejil fresco.',
+              alergenos:['🌾','🥛'] },
+
+            { id:58, categoria:'PARA ACOMPAÑAR', nombre:'PIZZA ROLLS',
+              precio:'4,00€', foto:'acompanamiento/aros.webp',
+              ingredientes:'Rollitos de masa de pizza rellenos de mozzarella y salsa de tomate.',
+              alergenos:['🌾','🥛'] },
+
+            { id:59, categoria:'PARA ACOMPAÑAR', nombre:'FINGER MOZZARELLA (6u)',
+              precio:'3,50€', foto:'acompanamiento/mozzarella.webp',
+              ingredientes:'Palitos de mozzarella empanados y fritos. Con salsa marinara.',
+              alergenos:['🌾','🥛','🥚'] },
+
+            { id:60, categoria:'PARA ACOMPAÑAR', nombre:'FINGER MOZZARELLA (10u)',
+              precio:'5,50€', foto:'acompanamiento/mozzarella.webp',
+              ingredientes:'Palitos de mozzarella empanados y fritos. Con salsa marinara.',
+              alergenos:['🌾','🥛','🥚'] },
+
+            { id:61, categoria:'PARA ACOMPAÑAR', nombre:'FINGER POLLO (6u)',
+              precio:'4,00€', foto:'acompanamiento/alitas.webp',
+              ingredientes:'Tiras de pollo empanadas y crujientes. Servidas con salsa.',
+              alergenos:['🌾','🥚'] },
+
+            { id:62, categoria:'PARA ACOMPAÑAR', nombre:'FINGER POLLO (10u)',
+              precio:'6,50€', foto:'acompanamiento/alitas.webp',
+              ingredientes:'Tiras de pollo empanadas y crujientes. Servidas con salsa.',
+              alergenos:['🌾','🥚'] },
+
+            { id:63, categoria:'PARA ACOMPAÑAR', nombre:'PATATAS FRITAS Pequeño',
+              precio:'2,00€', foto:'acompanamiento/fritas.webp',
+              ingredientes:'Patatas fritas crujientes, ligeramente saladas.',
+              alergenos:[] },
+
+            { id:64, categoria:'PARA ACOMPAÑAR', nombre:'PATATAS FRITAS Grande',
+              precio:'3,00€', foto:'acompanamiento/fritas.webp',
+              ingredientes:'Patatas fritas crujientes, ligeramente saladas.',
+              alergenos:[] },
+
+            // ── PATATAS GRATINADAS ───────────────────────────────────────
+            { id:70, categoria:'PATATAS GRATINADAS', nombre:"QUEEN'S",
+              precio:'P: 5,00€ · G: 6,00€', foto:'patatas/gratinadas.webp',
+              ingredientes:'Patatas gratinadas con nuestra mezcla exclusiva de quesos fundidos.',
+              alergenos:['🥛'] },
+
+            { id:71, categoria:'PATATAS GRATINADAS', nombre:'NEGRA',
+              precio:'P: 5,50€ · G: 6,50€', foto:'patatas/gratinadas.webp',
+              ingredientes:'Patatas gratinadas con salsa negra especial de la casa.',
+              alergenos:['🥛','🐟'] },
+
+            { id:72, categoria:'PATATAS GRATINADAS', nombre:'CARBONARA',
+              precio:'P: 5,50€ · G: 6,50€', foto:'patatas/gajos.webp',
+              ingredientes:'Patatas gratinadas con salsa carbonara, bacon y parmesano.',
+              alergenos:['🥛','🥚'] },
+
+            { id:73, categoria:'PATATAS GRATINADAS', nombre:'CHEDDAR',
+              precio:'P: 5,50€ · G: 6,50€', foto:'patatas/gratinadas.webp',
+              ingredientes:'Patatas gratinadas con abundante salsa de queso cheddar fundido.',
+              alergenos:['🥛'] },
+
+            { id:74, categoria:'PATATAS GRATINADAS', nombre:'LUZ 23',
+              precio:'P: 5,50€ · G: 6,50€', foto:'patatas/gajos.webp',
+              ingredientes:'Patatas gratinadas con la salsa especial Luz 23 de la casa.',
+              alergenos:['🥛','🥚'] },
+
+            { id:75, categoria:'PATATAS GRATINADAS', nombre:'MENCHU',
+              precio:'P: 5,50€ · G: 6,50€', foto:'patatas/gratinadas.webp',
+              ingredientes:'Patatas gratinadas estilo Menchu con ingredientes caseros.',
+              alergenos:['🥛'] },
+
+            { id:76, categoria:'PATATAS GRATINADAS', nombre:'BRAVAS CON 3 SALSAS',
+              precio:'P: 5,00€ · G: 6,00€', foto:'patatas/bravas.webp',
+              ingredientes:'Patatas bravas crujientes servidas con 3 salsas a elegir.',
+              alergenos:['🥚'] },
+
+            { id:77, categoria:'PATATAS GRATINADAS', nombre:'GAJO CON 2 SALSAS',
+              precio:'P: 5,00€ · G: 6,00€', foto:'patatas/gajos.webp',
+              ingredientes:'Patatas gajo con piel, condimentadas y horneadas. Con 2 salsas.',
+              alergenos:[] },
+
+            // ── MENÚS ────────────────────────────────────────────────────
+            { id:80, categoria:'MENÚS', nombre:'MENÚ HAMBURGUESA',
+              precio:'7,00€', foto:'menus/menu.webp',
+              ingredientes:'Hamburguesa completa + patatas fritas + bebida a elegir.',
+              alergenos:['🌾','🥛','🥚'] },
+
+            { id:81, categoria:'MENÚS', nombre:'MENÚ SIMPLE',
+              precio:'6,00€', foto:'menus/menu.webp',
+              ingredientes:'Hamburguesa simple + patatas fritas pequeñas + bebida.',
+              alergenos:['🌾'] },
+
+            { id:82, categoria:'MENÚS', nombre:'MENÚ PIZZA',
+              precio:'7,00€', foto:'menus/menu.webp',
+              ingredientes:'Pizza pequeña a elegir + bebida a elegir.',
+              alergenos:['🌾','🥛'] },
+
+            { id:83, categoria:'MENÚS', nombre:'MENÚ DOBLE',
+              precio:'7,00€', foto:'menus/menu.webp',
+              ingredientes:'Hamburguesa doble + patatas + bebida.',
+              alergenos:['🌾','🥛','🥚'] },
+
+            { id:84, categoria:'MENÚS', nombre:'MENÚ INFANTIL',
+              precio:'5,50€', foto:'menus/menu.webp',
+              ingredientes:'Hamburguesa simple + patatas pequeñas + refresco pequeño.',
+              alergenos:['🌾'] },
+        ];
+
+        // ── RENDER ──────────────────────────────────────────────────────
+        function renderCategorias() {
+            const container = document.getElementById('contenedor-categorias-principal');
+            container.innerHTML = categorias.map(cat => `
+                <div onclick="filtrar('${cat.id}')" class="relative h-36 rounded overflow-hidden shadow-lg border border-[#333] active:scale-95 transition-transform cursor-pointer group"
+                    style="border-color:#2a2a2a">
+                    <img src="${cat.foto}" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity bg-[#1A1A1A]" alt="${cat.id}">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex items-end justify-center pb-4">
+                        <span class="text-white text-xl font-title tracking-[0.2em] uppercase drop-shadow-md text-center px-2 leading-tight">${cat.id}</span>
+                    </div>
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-[#CC0000] rounded transition-all duration-300"
+                        style="box-shadow:inset 0 0 0 0 #CC0000"></div>
+                </div>
+            `).join('');
+        }
+
+        function filtrar(cat) {
+            const filtrados = platos.filter(p => p.categoria === cat);
+
+            document.getElementById('vista-categorias').classList.add('hidden');
+            document.getElementById('vista-platos').classList.remove('hidden');
+            document.getElementById('btn-atras').classList.remove('hidden');
+            document.getElementById('header-title').classList.add('hidden');
+            document.getElementById('titulo-actual').innerHTML = `
+                <span class="w-10 h-[2px] bg-[#CC0000] shadow-[0_0_8px_#CC0000] mr-3 flex-shrink-0"></span>${cat}`;
+
+            const grid = document.getElementById('grid-platos');
+            grid.innerHTML = '';
+
+            if (filtrados.length === 0) {
+                grid.innerHTML = '<p class="col-span-2 text-center text-gray-500 py-10 font-title text-sm uppercase">Próximamente</p>';
+            } else {
+                filtrados.forEach(plato => {
+                    grid.innerHTML += `
+                        <div onclick="openDetail(${plato.id})" class="bg-[#111] rounded shadow-lg overflow-hidden active:scale-95 transition-transform duration-200 text-center border-b-2 border-[#CC0000] flex flex-col h-full" style="box-shadow:0 4px 10px rgba(204,0,0,0.1)">
+                            <img src="${plato.foto}" loading="lazy" class="w-full h-40 object-cover opacity-85 flex-shrink-0 bg-[#1A1A1A]">
+                            <div class="p-3 flex flex-col justify-between flex-grow">
+                                <h4 class="font-title text-xs tracking-wide leading-tight text-gray-200 uppercase">${plato.nombre}</h4>
+                                <p class="font-title font-bold text-sm mt-2 whitespace-nowrap" style="color:#FF3333;text-shadow:0 0 6px #CC0000">${plato.precio}</p>
+                            </div>
+                        </div>`;
+                });
+            }
+            history.pushState({ view: 'platos' }, "");
+            window.scrollTo(0, 0);
+        }
+
+        function openDetail(id) {
+            const p = platos.find(x => x.id === id);
+            document.getElementById('detail-img').src = p.foto;
+            document.getElementById('detail-title').innerText = p.nombre;
+            document.getElementById('detail-price').innerText = p.precio;
+            document.getElementById('detail-ingredients').innerText = p.ingredientes;
+
+            // Sizes
+            const sizesWrap = document.getElementById('detail-sizes-wrap');
+            const sizesDiv  = document.getElementById('detail-sizes');
+            if (p.tallas && p.tallas.length) {
+                sizesDiv.innerHTML = p.tallas.map(t =>
+                    `<span class="size-pill">${t.l} <span>${t.p}</span></span>`
+                ).join('');
+                sizesWrap.classList.remove('hidden');
+            } else {
+                sizesWrap.classList.add('hidden');
+            }
+
+            // Allergens
+            const divA = document.getElementById('detail-alergenos');
+            divA.innerHTML = p.alergenos && p.alergenos.length
+                ? p.alergenos.map(a => `
+                    <div class="w-10 h-10 rounded border border-[#CC0000] flex items-center justify-center bg-[#050505] text-lg"
+                        style="box-shadow:0 0 8px rgba(204,0,0,0.2)">${a}</div>`).join('')
+                : '<span class="text-xs text-gray-600 font-light">Sin alérgenos declarados*</span>';
+
+            document.getElementById('dish-detail').classList.remove('translate-y-full');
+            document.body.style.overflow = 'hidden';
+            history.pushState({ view: 'detalle' }, "");
+        }
+
+        function closeDetail() {
+            document.getElementById('dish-detail').classList.add('translate-y-full');
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onload = renderCategorias;
+
+        window.onpopstate = function(event) {
+            const detailOpen  = !document.getElementById('dish-detail').classList.contains('translate-y-full');
+            const platosOpen  = !document.getElementById('vista-platos').classList.contains('hidden');
+
+            if (detailOpen) {
+                closeDetail();
+            } else if (platosOpen) {
+                document.getElementById('vista-categorias').classList.remove('hidden');
+                document.getElementById('vista-platos').classList.add('hidden');
+                document.getElementById('btn-atras').classList.add('hidden');
+                document.getElementById('header-title').classList.remove('hidden');
+            }
+        };
+    </script>
+
+</body>
+</html>
